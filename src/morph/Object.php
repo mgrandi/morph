@@ -25,14 +25,6 @@ class Object
     protected $id;
 
     /**
-     * The current state of this object
-     *
-     * one of Morph_Enum::STATE_*
-     * @var string
-     */
-    protected $state;
-
-    /**
      * The data associated with this object
      * @var \morph\PropertySet
      */
@@ -50,7 +42,6 @@ class Object
      */
     public function __construct($id = null)
     {
-        $this->state = Enum::STATE_NEW;
         $this->id = $id;
         $this->propertySet = new PropertySet();
         $this->validators = array();
@@ -95,7 +86,7 @@ class Object
      */
     public function state()
     {
-        return $this->state;
+        return $this->propertySet->getState();
     }
 
     /**
@@ -131,9 +122,8 @@ class Object
             unset($data['_ns']);
         }
         foreach ($data as $propertyName => $value) {
-            $this->propertySet->__setRawPropertyValue($propertyName, $value);
+            $this->propertySet->__setRawPropertyValue($propertyName, $value, $state);
         }
-        $this->state = $state;
         return $this;
     }
 
@@ -194,9 +184,6 @@ class Object
     {
         if (\array_key_exists($propertyName, $this->propertySet)) {
             $this->propertySet[$propertyName]->setValue($propertyValue);
-            if ($this->state == Enum::STATE_CLEAN) {
-                $this->state = Enum::STATE_DIRTY;
-            }
         }else{
             $this->addProperty(new \morph\property\Generic($propertyName, $propertyValue));
             \trigger_error("The property $propertyName was not found in object of class " . \get_class($this) . ' but I have added it as a generic property type', E_USER_WARNING);
@@ -230,18 +217,17 @@ class Object
     {
         return Storage::instance()->fetchById($this, $id);
     }
-	
+
     /**
      * Attempts to load the current object with data from the document id specified
-     * This is meant for if the _id is a ObjectId 
      *
      * @param mixed $id
      * @return Morph_Object
      */
-	public function loadByObjectId($id) 
-	{
-	    return Storage::instance()->fetchByObjectId($this, $id);
-	}
+    public function loadByObjectId($id)
+    {
+        return Storage::instance()->fetchByObjectId($this, $id);
+    }
 
     /**
      * Fetch multiple objects by their ids
@@ -252,6 +238,17 @@ class Object
     public function findByIds(array $ids)
     {
         return Storage::instance()->fetchByIds($this, $ids);
+    }
+    
+	/**
+     * Fetch multiple objects by their ids
+     *
+     * @param array $ids
+     * @return Morph_Iterator
+     */
+    public function findByObjectIds(array $ids)
+    {
+        return Storage::instance()->fetchByObjectIds($this, $ids);
     }
 
     /**

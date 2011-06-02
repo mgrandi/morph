@@ -28,3 +28,4 @@ $phar->setStub(file_get_contents($src_dir . '..' . DIRECTORY_SEPARATOR . 'bootst
 $phar->setMetadata($metadata);
 $phar->compressFiles(Phar::GZ);
 echo "All done!\n";
+
