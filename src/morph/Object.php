@@ -210,6 +210,9 @@ class Object
      * Attempts to load the current object with data from the document id specified
      * this is meant for if the _id is not necessarily an ObjectId
      *
+     * By default Morph sets the id to be an instance of MongoId().  When searching you need
+     * to ensure you do the same by wrapping your id string in a MongoId object
+     *
      * @param mixed $id
      * @return Morph_Object
      */
@@ -219,18 +222,10 @@ class Object
     }
 
     /**
-     * Attempts to load the current object with data from the document id specified
-     *
-     * @param mixed $id
-     * @return Morph_Object
-     */
-    public function loadByObjectId($id)
-    {
-        return Storage::instance()->fetchByObjectId($this, $id);
-    }
-
-    /**
      * Fetch multiple objects by their ids
+     * 
+     * By default Morph sets the id to be an instance of MongoId().  When searching you need
+     * to ensure you do the same by wrapping your id string in a MongoId object
      *
      * @param array $ids
      * @return Morph_Iterator
@@ -239,18 +234,7 @@ class Object
     {
         return Storage::instance()->fetchByIds($this, $ids);
     }
-    
-	/**
-     * Fetch multiple objects by their ids
-     *
-     * @param array $ids
-     * @return Morph_Iterator
-     */
-    public function findByObjectIds(array $ids)
-    {
-        return Storage::instance()->fetchByObjectIds($this, $ids);
-    }
-
+   
     /**
      * Find objects by query
      *
